@@ -9,8 +9,4 @@ JSON è ampiamente utilizzato nelle applicazioni web per lo scambio di dati tra 
 
 ## [Monipolazione di oggetti JSON](./_doc_/03_oggetti_json.md)
 
-## [JSON come interfaccia con il frontend](./_doc_/04_interfaccia_frontend.md)
-
-## [Storage di configurazioni in JSON](./_doc_/05_storage_configurazione.md)
-
-## [Esercitazione: la sessione in Node.js](./_doc_/06_esercitazione.md)
+## [Esercitazione](./_doc_/06_esercitazione.md)
