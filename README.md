@@ -1,13 +1,16 @@
 # Gestione dati con JSON
 
-La scelta tra sessioni e cookie dipende dalle specifiche esigenze del tuo progetto. Le sessioni sono ideali per dati sensibili e temporanei, mentre i cookie sono perfetti per preferenze utente e dati di lunga durata. Una buona applicazione web spesso utilizza entrambi in modo complementare.
+JSON (JavaScript Object Notation) è un formato di testo leggero usato per rappresentare dati strutturati. È stato creato per essere facilmente leggibile dagli utenti persone e facilmente interpretabile e generabile dai computer. JSON è composto da coppie chiave-valore, simile a un dizionario in Python o una mappa in C++ o Java. Ogni dato è racchiuso tra parentesi graffe {} e le coppie chiave-valore sono separate da virgole.
+JSON è ampiamente utilizzato nelle applicazioni web per lo scambio di dati tra server e client. Ad esempio, un'applicazione può inviare una richiesta con un dato JSON a un server per recuperare informazioni e ricevere una risposta con i dati di risposta strutturati in JSON.
 
-## [Introduzione](./_doc_/01_introduzione.md)
+## [Introduzione a JSON](./_doc_/01_introduzione.md)
 
-## [Vantaggi, Svantaggi e Casi d'uso](./_doc_/02_casi_duso.md)
+## [Sintassi e struttura JSON](./_doc_/02_sintassi_json.md)
 
-## [Esempi pratici di Sessioni e Cookies](./_doc_/03_esempi.md)
+## [Monipolazione di oggetti JSON](./_doc_/03_oggetti_json.md)
 
-## [Vulnerabilità di sicurezza](./_doc_/04_vulnerabilita_sicurezza.md)
+## [JSON come interfaccia con il frontend](./_doc_/04_interfaccia_frontend.md)
 
-## [Esercitazione: la sessione in Node.js](./_doc_/05_esercitazione.md)
+## [Storage di configurazioni in JSON](./_doc_/05_storage_configurazione.md)
+
+## [Esercitazione: la sessione in Node.js](./_doc_/06_esercitazione.md)
