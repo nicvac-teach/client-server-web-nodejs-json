@@ -3,7 +3,7 @@
 
 ## Origini e Storia
 JSON nasce nel 2001 da Douglas Crockford come soluzione al problema dello scambio dati tra browser e server. Prima di JSON, il formato dominante era XML, che presentava diverse problematiche:
-- Sintassi verbose e complessa
+- Sintassi verbosa e complessa
 - Overhead significativo nella trasmissione
 - Parsing più lento e complesso
 
@@ -11,7 +11,7 @@ La vera innovazione di JSON fu quella di basarsi sulla sintassi degli oggetti Ja
 - Nativo per JavaScript
 - Leggero e minimalista
 - Facile da leggere per gli umani
-- Semplice da parsare per le macchine
+- Semplice da interpretare (parsing) e da generare per le macchine
 
 ## Perché JSON è diventato lo standard?
 
