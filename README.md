@@ -1,4 +1,4 @@
-# Le Sessioni Web
+# Gestione dati con JSON
 
 La scelta tra sessioni e cookie dipende dalle specifiche esigenze del tuo progetto. Le sessioni sono ideali per dati sensibili e temporanei, mentre i cookie sono perfetti per preferenze utente e dati di lunga durata. Una buona applicazione web spesso utilizza entrambi in modo complementare.
 
