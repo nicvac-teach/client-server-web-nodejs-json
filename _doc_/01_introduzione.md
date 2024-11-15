@@ -34,7 +34,7 @@ La vera innovazione di JSON fu quella di basarsi sulla sintassi degli oggetti Ja
    - API REST
    - Storage di dati non relazionali
    - Web Services
-   - Memorizzazione di preferenze utente
+   - Memorizzazione delle preferenze utente
 
 ### Da XML a JSON: Un esempio pratico
 
