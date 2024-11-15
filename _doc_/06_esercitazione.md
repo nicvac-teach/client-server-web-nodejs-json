@@ -149,7 +149,7 @@ Quando viene premuto il pulsante del form e quindi viene richiesto **aggiungi-st
 - Si calcola nuovo ID da usare per il nuovo studente. Il nuovo ID è un numero progressivo calcolato sul massimo ID esistente.
 - Crea in memoria nuovo oggetto studente
 - Aggiunge l'oggetto alla struttura che contiene tutti gli studenti
-- Salva il file JSON su server. Il File JSON conterrà anche il nuovo studente appea inserito
+- Salva il file JSON su server. Il File JSON conterrà anche il nuovo studente appena inserito
 - Si viene reindirizzati alla pagina principale, in modo da visualizzare la lista aggiornata.
 
 ** Aggiungiamo la Configurazione per l'avvio del server**

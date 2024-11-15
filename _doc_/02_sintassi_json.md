@@ -63,7 +63,7 @@ Questo primo esempio illustra i concetti fondamentali della struttura oggetto JS
 - I valori possono essere di qualsiasi tipo supportato
 - Gli oggetti possono essere nidificati (indirizzo ha come valore a sua volta un oggetto JSON)
 - Gli array possono contenere valori multipli
-- Non sono permessi commenti nel JSON reale
+- Non sono permessi commenti nel JSON
 
 ### 2. Struttura Array
 Un array può essere usato come valore nella coppia chiave-valore.

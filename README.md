@@ -7,6 +7,6 @@ JSON è ampiamente utilizzato nelle applicazioni web per lo scambio di dati tra 
 
 ## [Sintassi e struttura JSON](./_doc_/02_sintassi_json.md)
 
-## [Monipolazione di oggetti JSON](./_doc_/03_oggetti_json.md)
+## [Manipolazione di oggetti JSON](./_doc_/03_oggetti_json.md)
 
 ## [Esercitazione](./_doc_/06_esercitazione.md)
