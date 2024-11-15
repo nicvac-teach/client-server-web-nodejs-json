@@ -12,10 +12,14 @@ L'applicazione deve:
 1. Mantenere i dati in un file JSON sul server
 2. Mostrare una tabella con tutti gli studenti
 3. Permettere l'inserimento di nuovi studenti
-4. Aggiornare automaticamente la vista dopo ogni inserimento
+4. Visualizzare automaticamente la lista aggiornata dopo ogni inserimento
 
 ## Passo 1: Creazione File JSON Iniziale
-Creiamo il file `backend/data/studenti.json` con alcuni dati di esempio:
+Creiamo la directory data in backend. Da terminale:
+```bash
+mkdir backend/data/
+```
+Creiamo il file json nella directory data `backend/data/studenti.json` con alcuni dati di esempio:
 ```json
 {
     "studenti": [
@@ -33,24 +37,36 @@ Creiamo il file `backend/data/studenti.json` con alcuni dati di esempio:
 }
 ```
 
-## Passo 2: Server Express
-Creiamo il file `backend/app.js`:
+## Passo 2: Implementiamo il Server
+Costruiamo passo passo il programma `backend/app.js`.
+
+**Importiamo i moduli**
 ```javascript
-const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
 const app = express();
+```
+Oltre ai moduli che già conosciamo (express), abbiamo aggiunto:
+- **fs**: modulo per operazioni sul filesystem (lettura/scrittura file, creazione cartelle)
+- **path**: modulo per gestire e manipolare percorsi di file e directory in modo cross-platform (Windows, Linux, Mac, ...).
 
+**Scriviamo la configurazione Iniziale**
+```javascript
 // Configurazione
-app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', 'views'));
+app.use(express.urlencoded({ extended: true }));
 
 // Percorso del file JSON
-const dataPath = path.join(__dirname, 'data', 'studenti.json');
+const dataPath = path.join('backend', 'data', 'studenti.json');
+```
+- Imposta EJS come template engine
+- Definisce il path per accedere ai dati JSON salvati sullo Storage locale.
 
+**Scriviamo le funzioni per leggere e salvare i file JSON**
+```javascript
 // Funzione per leggere il file JSON
-function leggiStudenti() {
+function leggiJsonStudenti() {
     try {
         const data = fs.readFileSync(dataPath, 'utf8');
         return JSON.parse(data);
@@ -61,8 +77,10 @@ function leggiStudenti() {
 }
 
 // Funzione per salvare nel file JSON
-function salvaStudenti(data) {
+function salvaJsonStudenti(data) {
     try {
+        //I parametri null, 4 permettono di scrivere il file json con
+        // l'indentazione, in modo che sia facilmente leggibile.
         fs.writeFileSync(dataPath, JSON.stringify(data, null, 4));
         return true;
     } catch (error) {
@@ -70,22 +88,46 @@ function salvaStudenti(data) {
         return false;
     }
 }
+```
+**leggiJsonStudenti**
+- Legge il file in modo sincrono
+- Gestisce eventuali errori
+- Ritorna un oggetto vuoto se il file non esiste
 
+**salvaJsonStudenti**
+- Scrive il file in modo sincrono. I parametri "null, 4" permettono di scrivere il file json usando l'indentazione, in modo che sia facilmente leggibile.
+- Gestisce eventuali errori
+- Scrive un messaggio sul log del server in caso di errore.
+
+
+**Scriviamo la Route GET '/'**
+```javascript
 // Route principale
 app.get('/', (req, res) => {
-    const data = leggiStudenti();
+    const data = leggiJsonStudenti();
     res.render('index', { studenti: data.studenti });
 });
+```
+Quando viene richiesta la pagina principale:
+- Legge i dati dal file JSON e li conserva nella struttura in memoria chiamata **data**
+- Passa l'array studenti **data.studenti** al template EJS per visualizzare la lista completa degli studenti.
 
+**Scriviamo la Route POST '/aggiungi-studente'**
+```javascript
 // Route per aggiungere studente
 app.post('/aggiungi-studente', (req, res) => {
     // Leggi dati esistenti
-    const data = leggiStudenti();
+    const data = leggiJsonStudenti();
     
-    // Calcola nuovo ID
-    const nuovoId = data.studenti.length > 0 
-        ? Math.max(...data.studenti.map(s => s.id)) + 1 
-        : 1;
+    // Calcola nuovo ID, aggiungendo 1 al valore più grande
+    let nuovoId = 1;
+    let iMax = 0;
+    for (let i = 0; i < data.studenti.length; i++) {
+        if (data.studenti[i].id > data.studenti[iMax].id) {
+            iMax = i;
+            nuovoId = data.studenti[iMax].id + 1;
+        }
+    }
     
     // Crea nuovo studente
     const nuovoStudente = {
@@ -94,70 +136,29 @@ app.post('/aggiungi-studente', (req, res) => {
         crediti: parseInt(req.body.crediti)
     };
     
-    // Aggiungi al array e salva
+    // Aggiungi il nuovo studente alla struttura e lo salva in JSON
     data.studenti.push(nuovoStudente);
-    salvaStudenti(data);
+    salvaJsonStudenti(data);
     
     // Redirect alla home
     res.redirect('/');
 });
-
-// Avvio server
-app.listen(3000, () => {
-    console.log('Server attivo sulla porta 3000');
-});
 ```
 
-### Spiegazione del Codice Server
+Quando viene premuto il pulsante del form e quindi viene richiesto **aggiungi-studente**:
+- Si calcola nuovo ID da usare per il nuovo studente. Il nuovo ID è un numero progressivo calcolato sul massimo ID esistente.
+- Crea in memoria nuovo oggetto studente
+- Aggiunge l'oggetto alla struttura che contiene tutti gli studenti
+- Salva il file JSON su server. Il File JSON conterrà anche il nuovo studente appea inserito
+- Si viene reindirizzati alla pagina principale, in modo da visualizzare la lista aggiornata.
 
-1. **Configurazione Iniziale**
-   ```javascript
-   app.use(express.urlencoded({ extended: true }));
-   app.set('view engine', 'ejs');
-   app.set('views', path.join(__dirname, '..', 'views'));
-   ```
-   - Configura il parsing dei dati form
-   - Imposta EJS come template engine
-   - Definisce la cartella delle views relativa alla root del progetto
-
-2. **Gestione File JSON**
-   ```javascript
-   function leggiStudenti() {
-       try {
-           const data = fs.readFileSync(dataPath, 'utf8');
-           return JSON.parse(data);
-       } catch (error) {
-           return { studenti: [] };
-       }
-   }
-   ```
-   - Legge il file in modo sincrono
-   - Gestisce eventuali errori
-   - Ritorna un oggetto vuoto se il file non esiste
-
-3. **Route GET '/'**
-   ```javascript
-   app.get('/', (req, res) => {
-       const data = leggiStudenti();
-       res.render('index', { studenti: data.studenti });
-   });
-   ```
-   - Legge i dati dal JSON
-   - Passa l'array studenti al template
-
-4. **Route POST '/aggiungi-studente'**
-   ```javascript
-   app.post('/aggiungi-studente', (req, res) => {
-       const data = leggiStudenti();
-       const nuovoId = data.studenti.length > 0 
-           ? Math.max(...data.studenti.map(s => s.id)) + 1 
-           : 1;
-       // ...
-   });
-   ```
-   - Calcola nuovo ID basato su ID massimo esistente
-   - Crea nuovo oggetto studente
-   - Aggiorna il file JSON
+** Aggiungiamo la Configurazione per l'avvio del server**
+```javascript
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
 
 ## Passo 3: Template EJS
 Creiamo il file `views/index.ejs`:
@@ -200,7 +201,7 @@ Creiamo il file `views/index.ejs`:
             
             <label class="w3-text-blue">Crediti</label>
             <input class="w3-input w3-border" type="number" 
-                   name="crediti" min="0" max="180" required>
+                   name="crediti" min="0" max="100" required>
             
             <button class="w3-btn w3-blue w3-margin-top" 
                     type="submit">Aggiungi</button>
@@ -212,52 +213,95 @@ Creiamo il file `views/index.ejs`:
 
 ### Spiegazione del Template
 
-1. **Struttura HTML**
-   - Usa W3.CSS per lo stile
-   - Container principale centrato
-   - Divisione chiara tra tabella e form
+**Struttura HTML**
+- Usa W3.CSS per lo stile
+- In testa crea una tabella con gli studenti salvati sul server
+- Dopo la tabella crea un form per l'inserimento di un nuovo studente
 
-2. **Tabella Studenti**
-   ```ejs
-   <% studenti.forEach(function(s) { %>
-       <tr>
-           <td><%= s.id %></td>
-           <td><%= s.nome %></td>
-           <td><%= s.crediti %></td>
-       </tr>
-   <% }); %>
-   ```
-   - Itera sull'array degli studenti
-   - Escape automatico dei dati con <%= %>
-   - Struttura tabellare responsive
+**Tabella Studenti**
+```html
+<% studenti.forEach(function(s) { %>
+    <tr>
+        <td><%= s.id %></td>
+        <td><%= s.nome %></td>
+        <td><%= s.crediti %></td>
+    </tr>
+<% }); %>
+```
+- Il template riceve l'array data.studenti da app.js
+- Itera sull'array degli studenti, e per ogni elemento s:
+- Crea una riga della tabella riportando id, nome, crediti
 
-3. **Form Inserimento**
-   ```ejs
-   <form action="/aggiungi-studente" method="POST">
-       <input name="nome" required>
-       <input name="crediti" type="number" min="0" max="180" required>
-   </form>
-   ```
-   - Validazione HTML5 dei campi
-   - Limiti sui crediti (0-180)
-   - Stile coerente con la tabella
+**Form Inserimento**
+```html
+<form action="/aggiungi-studente" method="POST" 
+        class="w3-container w3-card-4 w3-margin">
+    <h3>Aggiungi Nuovo Studente</h3>
+    
+    <label class="w3-text-blue">Nome</label>
+    <input class="w3-input w3-border" type="text" 
+            name="nome" required>
+    
+    <label class="w3-text-blue">Crediti</label>
+    <input class="w3-input w3-border" type="number" 
+            name="crediti" min="0" max="100" required>
+    
+    <button class="w3-btn w3-blue w3-margin-top" 
+            type="submit">Aggiungi</button>
+</form>        
+```
+- La validazione dei valori viene fatta sfruttando HTML5. Prima di inviare il form al server, si controlla che i crediti siano compresi fra 0 e 100.
+- Alla pressione del pulsante [Aggiungi], viene effettuata la chiamata POST ad aggiungi-studente per l'inserimento del nuovo studente.
 
-## Come Testare
 
-1. Avvia il server:
+## Test dell'Applicazione
+1. Da Terminale, interrompere con Ctrl-C eventuali esecuzioni precedenti ed avviare la versione aggiornata:
 ```bash
 node backend/app.js
 ```
 
-2. Apri il browser:
-```
-http://localhost:3000
-```
+2. Aprire la finestra PORTS, copiare e incollare l'indirizzo web nel Simple Browser o su un Web Browser.
 
-Il programma mostrerà:
-- Tabella con gli studenti esistenti
-- Form per aggiungere nuovo studente
-- Dopo l'inserimento, la pagina si aggiorna automaticamente
+<img src="./ports.png" alt="sb" width="70%"/>
+
+3. La lista degli studenti viene visualizzata in una tabella
+
+<img src="./tabella.png" alt="sb" width="70%"/>
+
+4. Viene visualizzato il form per l'inserimento di un nuovo studente
+
+<img src="./form.png" alt="sb" width="70%"/>
+
+5. Inserire un nuovo studente, premere il pulsante [Aggiungi] e controllare che il nuovo studente sia presente nella lista. In particolare controllare che l'id calcolato sul server sia un numero progressivo rispetto agli studenti già presenti.
+
+<img src="./form-add.png" alt="sb" width="70%"/>
+
+<img src="./tab-check.png" alt="sb" width="70%"/>
+
+
+6. Ispezionare il file JSON sullo storage locale del server nel file *backend/data/studenti.json*. Controllare che siano stati memorizzati tutti gli studenti:
+
+```json
+{
+    "studenti": [
+        {
+            "id": 1,
+            "nome": "Mario Rossi",
+            "crediti": 42
+        },
+        {
+            "id": 2,
+            "nome": "Laura Bianchi",
+            "crediti": 36
+        },
+        {
+            "id": 3,
+            "nome": "Emma Marrone",
+            "crediti": 45
+        }
+    ]
+}
+```
 
 
 [⬅️ [TORNA ALL'INDICE] ](../README.md)
